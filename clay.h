@@ -43,7 +43,7 @@
 #endif
 
 #ifdef CLAY_DLL
-#define CLAY_DLL_EXPORT __declspec(dllexport) __cdecl
+#define CLAY_DLL_EXPORT __declspec(dllexport) 
 #else
 #define CLAY_DLL_EXPORT
 #endif
