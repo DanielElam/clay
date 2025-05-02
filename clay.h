@@ -42,7 +42,7 @@
 #define CLAY_WASM_EXPORT(null)
 #endif
 
-#ifdef CLAY_DLL
+#if defined(CLAY_DLL) && defined(PLATFORM_WINDOWS)
 #define CLAY_DLL_EXPORT __declspec(dllexport) 
 #else
 #define CLAY_DLL_EXPORT
