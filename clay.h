@@ -848,6 +848,7 @@ CLAY_DLL_EXPORT void Clay_SetDebugModeEnabled(bool enabled);
 CLAY_DLL_EXPORT bool Clay_IsDebugModeEnabled(void);
 // Enables and disables visibility culling. By default, Clay will not generate render commands for elements whose bounding box is entirely outside the screen.
 CLAY_DLL_EXPORT void Clay_SetCullingEnabled(bool enabled);
+CLAY_DLL_EXPORT void Clay_SetExternalScrollHandlingEnabled(bool enabled);
 // Returns the maximum number of UI elements supported by Clay's current configuration.
 CLAY_DLL_EXPORT int32_t Clay_GetMaxElementCount(void);
 // Modifies the maximum number of UI elements supported by Clay's current configuration.
