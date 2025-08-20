@@ -31,8 +31,7 @@
 #if !( \
     (defined(__cplusplus) && __cplusplus >= 202002L) || \
     (defined(__STDC__) && __STDC__ == 1 && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || \
-    defined(_MSC_VER) || \
-    defined(__OBJC__) \
+    defined(_MSC_VER) \
 )
 #error "Clay requires C99, C++20, or MSVC"
 #endif
@@ -90,7 +89,7 @@
 // Note: If a compile error led you here, you might be trying to use CLAY_IDI_LOCAL with something other than a string literal. To construct an ID with a dynamic string, use CLAY_SIDI_LOCAL instead.
 #define CLAY_IDI_LOCAL(label, index) CLAY_SIDI_LOCAL(CLAY_STRING(label), index)
 
-#define CLAY_SIDI_LOCAL(label, index) Clay__HashStringWithOffset(label, index, Clay__GetParentElementId())
+#define CLAY_SIDI_LOCAL(label, index) Clay__HashString(label, index, Clay__GetParentElementId())
 
 #define CLAY__STRING_LENGTH(s) ((sizeof(s) / sizeof((s)[0])) - sizeof((s)[0]))
 
@@ -586,6 +585,8 @@ typedef struct Clay_ImageRenderData {
     // Controls the "radius", or corner rounding of this image.
     // The rounding is determined by drawing a circle inset into the element corner by (radius, radius) pixels.
     Clay_CornerRadius cornerRadius;
+    // The original dimensions of the source image, used to control aspect ratio.
+    Clay_Dimensions sourceDimensions;
     // A pointer transparently passed through from the original element definition, typically used to represent image data.
     void* imageData;
 } Clay_ImageRenderData;
