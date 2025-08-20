@@ -585,8 +585,6 @@ typedef struct Clay_ImageRenderData {
     // Controls the "radius", or corner rounding of this image.
     // The rounding is determined by drawing a circle inset into the element corner by (radius, radius) pixels.
     Clay_CornerRadius cornerRadius;
-    // The original dimensions of the source image, used to control aspect ratio.
-    Clay_Dimensions sourceDimensions;
     // A pointer transparently passed through from the original element definition, typically used to represent image data.
     void* imageData;
 } Clay_ImageRenderData;
