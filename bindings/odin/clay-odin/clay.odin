@@ -113,9 +113,12 @@ TextElementConfig :: struct {
 	textAlignment:      TextAlignment,
 }
 
+AspectRatioElementConfig :: struct {
+	aspectRatio:        f32,
+}
+
 ImageElementConfig :: struct {
 	imageData:        rawptr,
-	sourceDimensions: Dimensions,
 }
 
 CustomElementConfig :: struct {
@@ -170,6 +173,11 @@ FloatingAttachToElement :: enum EnumBackingType {
 	Root,
 }
 
+FloatingClipToElement :: enum EnumBackingType {
+	None,
+	AttachedParent,
+}
+
 FloatingElementConfig :: struct {
 	offset:             Vector2,
 	expand:             Dimensions,
@@ -178,6 +186,7 @@ FloatingElementConfig :: struct {
 	attachment:         FloatingAttachPoints,
 	pointerCaptureMode: PointerCaptureMode,
 	attachTo:           FloatingAttachToElement,
+	clipTo:             FloatingClipToElement,
 }
 
 TextRenderData :: struct {
@@ -197,7 +206,6 @@ RectangleRenderData :: struct {
 ImageRenderData :: struct {
 	backgroundColor: Color,
 	cornerRadius: CornerRadius,
-	sourceDimensions: Dimensions,
 	imageData: rawptr,
 }
 
@@ -334,6 +342,7 @@ ElementDeclaration :: struct {
 	layout:          LayoutConfig,
 	backgroundColor: Color,
 	cornerRadius:    CornerRadius,
+	aspectRatio:     AspectRatioElementConfig,
 	image:           ImageElementConfig,
 	floating:        FloatingElementConfig,
 	custom:          CustomElementConfig,
@@ -404,7 +413,8 @@ foreign Clay {
 @(link_prefix = "Clay_", default_calling_convention = "c", private)
 foreign Clay {
 	_ConfigureOpenElement :: proc(config: ElementDeclaration) ---
-	_HashString :: proc(key: String, offset: u32, seed: u32) -> ElementId ---
+	_HashString :: proc(key: String, seed: u32) -> ElementId ---
+	_HashStringWithOffset :: proc(key: String, index: u32, seed: u32) -> ElementId ---
 	_OpenTextElement :: proc(text: String, textConfig: ^TextElementConfig) ---
 	_StoreTextElementConfig :: proc(config: TextElementConfig) -> ^TextElementConfig ---
 	_GetParentElementId :: proc() -> u32 ---
@@ -439,15 +449,23 @@ PaddingAll :: proc(allPadding: u16) -> Padding {
 	return { left = allPadding, right = allPadding, top = allPadding, bottom = allPadding }
 }
 
+BorderOutside :: proc(width: u16) -> BorderWidth {
+	return {width, width, width, width, 0}
+}
+
+BorderAll :: proc(width: u16) -> BorderWidth {
+	return {width, width, width, width, width}
+}
+
 CornerRadiusAll :: proc(radius: f32) -> CornerRadius {
 	return CornerRadius{radius, radius, radius, radius}
 }
 
-SizingFit :: proc(sizeMinMax: SizingConstraintsMinMax) -> SizingAxis {
+SizingFit :: proc(sizeMinMax: SizingConstraintsMinMax = {}) -> SizingAxis {
 	return SizingAxis{type = SizingType.Fit, constraints = {sizeMinMax = sizeMinMax}}
 }
 
-SizingGrow :: proc(sizeMinMax: SizingConstraintsMinMax) -> SizingAxis {
+SizingGrow :: proc(sizeMinMax: SizingConstraintsMinMax = {}) -> SizingAxis {
 	return SizingAxis{type = SizingType.Grow, constraints = {sizeMinMax = sizeMinMax}}
 }
 
@@ -464,9 +482,9 @@ MakeString :: proc(label: string) -> String {
 }
 
 ID :: proc(label: string, index: u32 = 0) -> ElementId {
-	return _HashString(MakeString(label), index, 0)
+	return _HashString(MakeString(label), 0)
 }
 
 ID_LOCAL :: proc(label: string, index: u32 = 0) -> ElementId {
-	return _HashString(MakeString(label), index, _GetParentElementId())
+	return _HashStringWithOffset(MakeString(label), index, _GetParentElementId())
 }
